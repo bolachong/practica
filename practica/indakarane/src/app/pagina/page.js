@@ -1,34 +1,31 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Button from "@/components/Button"
+import { useEffect, useState } from "react"
 
+export default function hola() {
 
-export default function Autores() {
-  const [autores, setAutores] = useState([])
+  const [cambio, setCambio] = useState("");
+
+  function apellido() {
+    setCambio(cambio + "Hanazono")
+  }
 
   useEffect(() => {
-    const obtenerAutores = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/autores")
-        const data = await response.json()
-        setAutores(data.autores || data)
-      } catch (error) {
-        console.error("Error al obtener autores:", error)
+      if (cambio == "Hanazono") {
+          console.log("alta chad esa")
+          setCambio("")
       }
-    }
+  }, [cambio])
 
-    obtenerAutores()
-  }, [])
 
   return (
-    <div>
-      <h1>Autores</h1>
-      <ul>
-        {autores.map((autor, index) => (
-          <li key={index}>{autor.nombre}</li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <h2>Hakari: {cambio}</h2>
+      <Button
+        text="Memato"
+        onClick={apellido}
+      ></Button>
+    </>
   )
 }
