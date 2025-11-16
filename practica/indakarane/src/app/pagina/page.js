@@ -6,26 +6,36 @@ import { useEffect, useState } from "react"
 export default function hola() {
 
   const [cambio, setCambio] = useState("");
-
-  function apellido() {
-    setCambio(cambio + "Hanazono")
-  }
+  const [autores, setAutores] = useState('');
+  const [mensaje, setMensaje] = useState('');
+  const [carga, setCarga] = useState(true);
 
   useEffect(() => {
-      if (cambio == "Hanazono") {
-          console.log("alta chad esa")
-          setCambio("")
-      }
-  }, [cambio])
+      fetch('http://localhost:3001/saludo')
+          .then(response => response.json())
+          .then(data => {
+              console.log(data);
+              setMensaje(data.mensaje);
+              setCarga(false);
+          });
+  }, []);
 
+      fetch('http://localhost:3001/autores')
+          .then(response => response.json())
+          .then(data => console.log(data));
+      
+      
+
+  if (carga) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <>
-      <h2>Hakari: {cambio}</h2>
-      <Button
-        text="Memato"
-        onClick={apellido}
-      ></Button>
+      <div>
+        <h1>Respuesta del Backend</h1>
+        <p>{mensaje}</p>
+      </div>
     </>
-  )
+  );
 }
