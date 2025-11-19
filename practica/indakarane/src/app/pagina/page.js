@@ -10,12 +10,12 @@ export default function hola() {
   const [cambio, setCambio] = useState("");
   const [autores, setAutores] = useState('');
   const [mensaje, setMensaje] = useState('');
-  const [carga, setCarga] = useState(true);
   const [tetso, setTetso] = useState('');
   const [autorSelect, setAutorSelect] = useState('');
   const [checkbox, setCheckbox] = useState(false);
   const [edadN, setEdadN] = useState('');
 
+  /*
   useEffect(() => {
       fetch('http://localhost:3001/saludo')
           .then(response => response.json())
@@ -25,6 +25,7 @@ export default function hola() {
               setCarga(false);
           });
   }, []);
+  */
 
   useEffect(() => {
       fetch('http://localhost:3001/autores')
@@ -34,7 +35,8 @@ export default function hola() {
             setAutores(data);
           });
   }, []);
-    
+  
+
    function traerAutores() {
     console.log("Autores:", autores)
    }
@@ -76,12 +78,7 @@ export default function hola() {
         });
     }
   
-      
-      
 
-  if (carga) {
-    return <div>Cargando...</div>;
-  }
 
   if (autores == undefined) {
     console.log("sos un pelotudo")
@@ -101,24 +98,18 @@ export default function hola() {
         <h1>Respuesta del Backend</h1>
         <p>{mensaje}</p>
       </div>
-      <div>
         <h2>Lista de Autores</h2>
-                <select name="Autores" value={autorSelect} onChange={(e) => setAutorSelect(e.target.value)}>
-                    {autores && autores.length > 0 ? (
-                        autores.map((autor) => (
-                            <option key={autor.id} value={autor.nombre}>
-                                {autor.nombre}, Edad: {autor.edad}
-                            </option>
-                          ))
-                    ) : (
-                        <option disabled>No hay autores disponibles</option>
-                    )}
-                </select>
-                 {autorSelect && (
-                    <div>
-                        <p><strong>Autor seleccionado:</strong> {autorSelect}</p>
-                    </div>
-                )}
+        <div className="mano">
+        <select name="autores" onChange={(event)=> setAutorSelect(event.target.value)}>
+          {autores.length != 0 && autores.map((autor) => {
+          <option value={autor.nombre} key={autor.id}>{autor.nombre}, Edad: {autor.edad} </option>
+          }
+        )}
+        </select>
+        {autorSelect && (<div>
+          <p>Autor seleccionado: {autorSelect}</p>
+        </div>
+        )}
       </div>
         <Button
         text="soy gay"

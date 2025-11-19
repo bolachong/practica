@@ -1,18 +1,46 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const session = require('express-session');
+const MySQL = require('./modulos/mysql');
+const { realizarQuery } = require('./modulos/mysql');
 
 app.use(cors());
 app.use(express.json());
 
-app.get('/saludo', (req, res) => {
+const LISTEN_PORT = 4000;
+
+const server = app.listen(LISTEN_PORT, () => {
+    console.log(`Servidor NodeJS corriendo en http://localhost:${LISTEN_PORT}/`);
+});;
+
+const io = require('socket.io')(server, {
+    cors: {
+        // IMPORTANTE: REVISAR PUERTO DEL FRONTEND
+        origin: ["http://localhost:3000", "http://localhost:3001"], // Permitir el origen localhost:3000
+        methods: ["GET", "POST", "PUT", "DELETE"],   // Métodos permitidos
+        credentials: true                           // Habilitar el envío de cookies
+    }
+});
+
+const sessionMiddleware = session({
+    //Elegir tu propia key secreta
+    secret: "pedocaca",
+    resave: false,
+    saveUninitialized: false
+});
+
+app.use(sessionMiddleware);
+
+/*app.get('/saludo', (req, res) => {
     res.json({
         mensaje: 'Hola desde el backend!',
         timestamp: new Date().toISOString()
     });
 });
+*/
 
-app.get('/autores', (req, res) => {
+/*app.get('/autores', (req, res) => {
     const autores = [
         { id: 12345678, nombre: 'Gen Urobuchi', edad: 52, seudonimo: null },
         { id: 13579246, nombre: 'Akira Toriyama', edad: 68, seudonimo: 'Toriyama' },
@@ -22,35 +50,25 @@ app.get('/autores', (req, res) => {
     ];
     res.json(autores);
 });
+*/
+
+app.get('/autores', async function(req,res){
+    try {
+        let respuesta;
+            respuesta = await realizarQuery("SELECT * FROM Autores");
+            console.log(respuesta)  
+            res.send(respuesta);
+    } catch (error) {
+        res.send({mensaje:"Tuviste un error", error:error.message});
+    }
+})
+
+
 
 app.listen(3001, () => {
     console.log('Backend ejecutándose en http://localhost:3001');
 });
 
-app.put('/modificarAutor', (req, res) => {
-    const { autor, edad } = req.query; // Obtener parámetros de la URL
-    
-    console.log(`Modificando autor: ${autor}, nueva edad: ${edad}`);
-    
-    // Aquí deberías actualizar la base de datos
-    // Por ejemplo con MySQL:
-    const query = 'UPDATE autores SET edad = ? WHERE nombre = ?';
-    
-    db.query(query, [edad, autor], (error, results) => {
-        if (error) {
-            console.error('Error al actualizar:', error);
-            return res.status(500).json({ 
-                success: false, 
-                mensaje: 'Error al modificar autor' 
-            });
-        }
-        
-        res.json({ 
-            success: true, 
-            mensaje: `Autor ${autor} actualizado con edad ${edad}`,
-            resultados: results
-        });
-    });
-});
+
 
 
